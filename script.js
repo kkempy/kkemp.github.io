@@ -5,77 +5,55 @@ const state = {
   theme: localStorage.getItem("theme") || "dark",
   projects: [
     {
-      title: "Web Vulnerability Lab (OWASP Demo)",
-      desc: "A small vulnerable web demo + writeup showing common issues and fixes.",
-      tags: ["OWASP", "XSS", "CSRF", "Secure Coding"],
+      title: "Cyber security prtoject",
+      desc: "Privacy-Preserving Walk-Away Lock with Presence-Based Security, Lightweight Identity Verification",
+      tags: ["Python", "OpenCV", "Mediapipe"],
       links: {
-        github: "https://github.com/your-username/owasp-demo",
+        github: "https://github.com/kkempy/Privacy-Preserving-Walk-Away-Lock-with-Presence-Based-Security-Lightweight-Identity-Verification",
         live: "#"
       },
       caseStudy: {
-        problem: "Show practical understanding of common web vulnerabilities with clear remediation steps.",
+        problem: "Leaving devices vulnerable to unauthorsed users.",
         approach: [
-          "Built simple endpoints to demonstrate issues (XSS/CSRF/auth flaws).",
-          "Documented reproduction steps with screenshots.",
-          "Added fixed versions + explanation of the mitigation."
+          "Using the webcam to detect when users leave the frame to lock.",
+          "Used face detection then added face identity to authorise the user.",
+          "built on the system while understanding more about the tools."
         ],
         results: [
-          "Clear before/after demonstrating impact and fixes.",
-          "Writeup is recruiter-friendly and shows structured thinking."
+          "Built a application that only a authorised user doesnt require the user to do anything",
+          "Document the whole thing and then published to github"
         ],
-        stack: ["HTML", "CSS", "JS", "Node (optional)"]
+        stack: ["Python", "OpenCV", "Mediapipe"]
       }
     },
     {
-      title: "Python Port Scanner (UI Frontend)",
-      desc: "A scanner script with a clean web UI to show results and export reports.",
-      tags: ["Networking", "Python", "UI", "Reporting"],
+      title: "Website portfolio",
+      desc: "A website as a portfolio.",
+      tags: ["Networking", "CSS", "JS", "HTML", "Portfolio"],
       links: {
-        github: "https://github.com/your-username/port-scanner",
+        github: "https://github.com/kkempy/kkemp.github.io",
         live: "#"
       },
       caseStudy: {
-        problem: "Turn a common security script into a presentable tool with an interface.",
+        problem: "Create a portfolio to show of me and my skills.",
         approach: [
-          "Scanner outputs JSON results.",
-          "Frontend reads results and displays services, risk notes, and exports.",
-          "Added input validation and helpful UX states."
+          "Learn about hosting the website, getting a domain, learning how to have the website accessible",
+          "Built a website for as cheap as possible, and show of my skills in UI and web.",
         ],
         results: [
-          "Demonstrates both security fundamentals + UI polish.",
-          "Easy to demo in interviews."
+          "Demonstrates security fundamentals + UI polish.",
+          "Show of my skills and learn ."
         ],
-        stack: ["Python", "JSON", "HTML", "CSS", "JS"]
+        stack: ["Web", "JSON", "HTML", "CSS", "JS"]
       }
     },
-    {
-      title: "Phishing Awareness Mini-Site",
-      desc: "A UI-focused educational demo explaining phishing patterns and detection tips.",
-      tags: ["Awareness", "UX", "Content", "Security"],
-      links: {
-        github: "https://github.com/your-username/phishing-awareness",
-        live: "#"
-      },
-      caseStudy: {
-        problem: "Show security communication skills + UI design.",
-        approach: [
-          "Designed interactive examples of suspicious emails and URLs.",
-          "Short quizzes + explanation after each answer.",
-          "Accessible, mobile-first layout."
-        ],
-        results: [
-          "Shows you can communicate security to non-technical users.",
-          "Great for graduate roles."
-        ],
-        stack: ["HTML", "CSS", "JS"]
-      }
-    }
+    
   ],
   writeups: [
     {
       title: "How I approach web recon",
       date: "2026-02-12",
-      desc: "A short workflow: scope → recon → endpoints → hypotheses → validation.",
+      desc: "A short workflow: scope -> recon -> endpoints -> hypotheses -> validation.",
       href: "#"
     },
     {
@@ -97,7 +75,7 @@ const state = {
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   localStorage.setItem("theme", theme);
-  $("#themeIcon").textContent = theme === "dark" ? "☾" : "☀";
+  $("#themeIcon").textContent = theme === "dark" ? "Moon" : "Sun";
   state.theme = theme;
 }
 applyTheme(state.theme);
@@ -132,8 +110,8 @@ window.addEventListener("scroll", () => {
 // Render projects
 function projectCard(p, idx) {
   const tags = p.tags.map(t => `<span class="badge">${escapeHtml(t)}</span>`).join("");
-  const gh = p.links.github ? `<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub ↗</a>` : "";
-  const live = p.links.live && p.links.live !== "#" ? `<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live ↗</a>` : "";
+  const gh = p.links.github ? `<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub -></a>` : "";
+  const live = p.links.live && p.links.live !== "#" ? `<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live -></a>` : "";
 
   return `
     <article class="card">
@@ -168,7 +146,7 @@ function writeupCard(w) {
       </div>
       <p class="muted">${escapeHtml(w.desc)}</p>
       <div class="card-actions">
-        <a class="link" href="${w.href}">Read ↗</a>
+        <a class="link" href="${w.href}">Read -></a>
       </div>
     </article>
   `;
@@ -212,8 +190,8 @@ function openModal(projectIndex) {
   `;
 
   const links = [];
-  if (p.links.github) links.push(`<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub ↗</a>`);
-  if (p.links.live && p.links.live !== "#") links.push(`<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live ↗</a>`);
+  if (p.links.github) links.push(`<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub -></a>`);
+  if (p.links.live && p.links.live !== "#") links.push(`<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live -></a>`);
   modalFoot.innerHTML = links.join("");
 
   modal.removeAttribute("hidden");

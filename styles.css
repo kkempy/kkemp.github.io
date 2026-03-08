@@ -345,6 +345,7 @@ input:focus, textarea:focus{
 }
 /* Ensure hidden attribute actually hides modal (and any element using [hidden]) */
 [hidden] { display: none !important; }
+
 hr.sep{
   border: none;
   border-top: 1px solid var(--border);
