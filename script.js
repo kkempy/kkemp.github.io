@@ -1,74 +1,85 @@
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-const FORMSPREE_ID = "xbdzdjpb"; 
+const FORMSPREE_ID = "xbdzdjpb";
+
+// ─── Data ─────────────────────────────────────────────────────────────────────
 const state = {
   theme: localStorage.getItem("theme") || "dark",
+
+  // ── UPDATE THIS as you complete TryHackMe rooms ──
+  thmRooms: 0,
+
   projects: [
     {
       title: "Privacy-Preserving Walk-Away Lock",
-      desc: "A Python application that automatically locks your device when you leave, using computer vision to detect presence and verify identity — no interaction required.",
+      desc: "A Python tool that automatically locks your screen the moment you leave, and only unlocks when it recognises your face on return — no passwords, no manual action, no cloud.",
       tags: ["Python", "OpenCV", "Mediapipe", "Computer Vision"],
       links: {
         github: "https://github.com/kkempy/Privacy-Preserving-Walk-Away-Lock-with-Presence-Based-Security-Lightweight-Identity-Verification",
         live: "#"
       },
       caseStudy: {
-        problem: "Devices left unattended are a common physical security risk, yet existing lock solutions require manual action. The goal was a hands-free, privacy-respecting solution that only activates for the authorised user.",
+        problem: "Unattended devices are one of the most overlooked physical security risks. Timer-based locks are too slow; manual locking gets forgotten. I wanted to build something that worked automatically and respected user privacy — no cloud, no data leaving the machine.",
         approach: [
-          "Used OpenCV and Mediapipe to detect when a person leaves the webcam frame, triggering an automatic screen lock.",
-          "Added lightweight face recognition to verify identity on return — the device only unlocks for the registered user.",
-          "Iterated on detection thresholds to reduce false positives while keeping latency low.",
-          "Kept all processing local — no cloud, no data leaving the machine."
+          "Used Mediapipe's pose detection to track when the registered user leaves the webcam frame, triggering an immediate OS-level screen lock.",
+          "Added lightweight face recognition on return — the screen only unlocks for the authorised user, blocking anyone else who sits down.",
+          "Iterated on detection sensitivity to cut false positives (looking away briefly, poor lighting) without slowing response time.",
+          "Kept all processing fully local — no API calls, no data sent anywhere. Privacy is built in, not bolted on."
         ],
         results: [
-          "Fully functional application that locks automatically with no user interaction required.",
-          "Zero cloud dependency — all identity checks run locally, preserving privacy.",
-          "Documented and published to GitHub with setup instructions."
+          "Working application with automatic lock and unlock — zero interaction needed during normal use.",
+          "Entirely local: identity checks run on-device with no external dependencies.",
+          "Documented end-to-end and published on GitHub with clear setup instructions."
         ],
         stack: ["Python", "OpenCV", "Mediapipe"]
       }
     },
     {
       title: "Cyber Security Portfolio Site",
-      desc: "This portfolio — a hand-coded static site hosted on GitHub Pages with a custom domain, dark/light theming, and no frameworks.",
-      tags: ["HTML", "CSS", "JS", "GitHub Pages"],
+      desc: "This site — hand-coded from scratch without any frameworks, hosted on GitHub Pages with a custom domain, and built with security-conscious practices throughout.",
+      tags: ["HTML", "CSS", "JavaScript", "GitHub Pages"],
       links: {
         github: "https://github.com/kkempy/kkemp.github.io",
         live: "https://kkemp.co.uk"
       },
       caseStudy: {
-        problem: "Needed a professional portfolio that demonstrates both security knowledge and frontend ability — built from scratch, hosted for free, and fast.",
+        problem: "I needed something to actually show people — a live, deployed site that demonstrates both frontend ability and security awareness, without spending money on hosting or reaching for a framework I didn't need.",
         approach: [
-          "Built entirely in vanilla HTML, CSS, and JS — no frameworks or build tools.",
-          "Deployed via GitHub Pages with a custom domain (kkemp.co.uk) — total cost: the domain.",
-          "Applied security-minded thinking to the frontend: XSS-safe rendering with escapeHtml(), no inline event handlers, accessible markup."
+          "Built the whole thing in vanilla HTML, CSS and JS. No React, no build pipeline, no dependencies — just the platform.",
+          "Deployed to GitHub Pages with a custom .co.uk domain. Ongoing cost: the domain only.",
+          "Applied security-conscious frontend thinking throughout: all dynamic content rendered through escapeHtml() to prevent XSS, no inline event handlers, semantic and accessible HTML.",
+          "Added dark/light theming, Formspree contact form, animated stats counter, scroll progress bar, and a scrollable case-study modal — all without a single npm package."
         ],
         results: [
-          "Live at kkemp.co.uk — a real, deployed product.",
-          "Shows UI and frontend security skills in a single project."
+          "Live at kkemp.co.uk — a real deployed product, not a mock-up.",
+          "Demonstrates frontend security awareness in a practical, tangible way.",
+          "Fast, accessible, and costs nothing to run."
         ],
-        stack: ["HTML", "CSS", "JS", "GitHub Pages"]
+        stack: ["HTML", "CSS", "JavaScript", "GitHub Pages", "Formspree"]
       }
     }
   ],
+
+  // href: "#" = not published yet → renders as "Coming soon"
+  // href: "/writeups/my-post.html" = published → renders as "Read →"
   writeups: [
     {
       title: "How I approach web recon",
       date: "2026-02-12",
-      desc: "My workflow: scope → passive recon → endpoint mapping → hypothesis → validation. What I've learned from doing it properly.",
+      desc: "My actual workflow: define scope first, go passive before active, map endpoints before you hypothesise. What changes when you do it in the right order.",
       href: "#"
     },
     {
-      title: "XSS: impact, context, and the parts people miss",
+      title: "XSS: context, sinks, and what people miss",
       date: "2026-01-28",
-      desc: "Context-aware escaping, dangerous sinks, and why 'just sanitise input' isn't the full answer.",
+      desc: "Why 'sanitise your input' isn't enough. The difference between reflected, stored and DOM XSS, why output context matters, and the sinks that catch people out.",
       href: "#"
     },
     {
-      title: "DNS basics for attackers and defenders",
+      title: "DNS for attackers and defenders",
       date: "2026-01-10",
-      desc: "Records, resolution chains, and the common misconfigurations that show up in real assessments.",
+      desc: "Records, resolution chains, zone transfers. The misconfigs that keep showing up — dangling CNAMEs, open resolvers, subdomain takeovers — and why they're easy to miss.",
       href: "#"
     }
   ]
@@ -87,10 +98,9 @@ function applyTheme(theme) {
   $("#themeIcon").innerHTML = theme === "dark" ? moonSVG : sunSVG;
   state.theme = theme;
 }
-applyTheme(state.theme);
 
-// Set static SVG icons
-$("#menuIcon").innerHTML  = menuSVG;
+applyTheme(state.theme);
+$("#menuIcon").innerHTML       = menuSVG;
 $("#modalCloseIcon").innerHTML = closeSVG;
 
 $("#themeBtn").addEventListener("click", () => {
@@ -100,54 +110,55 @@ $("#themeBtn").addEventListener("click", () => {
 // ─── Mobile menu ──────────────────────────────────────────────────────────────
 const menuBtn    = $("#menuBtn");
 const mobileMenu = $("#mobileMenu");
+
 menuBtn.addEventListener("click", () => {
-  const isHidden = mobileMenu.hasAttribute("hidden");
-  if (isHidden) mobileMenu.removeAttribute("hidden");
+  if (mobileMenu.hasAttribute("hidden")) mobileMenu.removeAttribute("hidden");
   else mobileMenu.setAttribute("hidden", "");
 });
-$$(".mobile-menu a").forEach(a => a.addEventListener("click", () => {
-  mobileMenu.setAttribute("hidden", "");
-}));
+$$(".mobile-menu a").forEach(a =>
+  a.addEventListener("click", () => mobileMenu.setAttribute("hidden", ""))
+);
 
-// ─── Scroll progress bar ──────────────────────────────────────────────────────
+// ─── Scroll progress ──────────────────────────────────────────────────────────
 window.addEventListener("scroll", () => {
   const doc = document.documentElement;
-  const p = doc.scrollHeight - doc.clientHeight > 0
+  const pct = doc.scrollHeight - doc.clientHeight > 0
     ? (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100 : 0;
-  $(".scroll-progress").style.width = `${p}%`;
+  $(".scroll-progress").style.width = `${pct}%`;
 }, { passive: true });
 
 // ─── Animated counter ─────────────────────────────────────────────────────────
 function animateCounter(el, target, duration = 900) {
   const isPlus = String(target).endsWith("+");
-  const num = parseInt(target);
-  const start = performance.now();
-  function step(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease out cubic
-    el.textContent = Math.floor(eased * num) + (isPlus && progress >= 1 ? "+" : "");
-    if (progress < 1) requestAnimationFrame(step);
+  const num    = parseInt(target);
+  if (num === 0) { el.textContent = "0"; return; } // skip animation if zero
+  const start  = performance.now();
+  (function step(now) {
+    const p     = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(eased * num) + (isPlus && p >= 1 ? "+" : "");
+    if (p < 1) requestAnimationFrame(step);
     else el.textContent = String(target);
-  }
-  requestAnimationFrame(step);
+  })(start);
 }
 
-const statsObserver = new IntersectionObserver((entries) => {
+new IntersectionObserver((entries, obs) => {
   entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      animateCounter($("#statProjects"), state.projects.length);
-      animateCounter($("#statWriteups"), state.writeups.length);
-      animateCounter($("#statLabs"), "10+");
-      statsObserver.disconnect();
-    }
+    if (!entry.isIntersecting) return;
+    animateCounter($("#statProjects"), state.projects.length);
+    animateCounter($("#statWriteups"), state.writeups.length);
+    animateCounter($("#statRooms"), state.thmRooms);
+    obs.disconnect();
   });
-}, { threshold: 0.5 });
+}, { threshold: 0.5 }).observe($(".stats"));
 
-// ─── Render projects ──────────────────────────────────────────────────────────
+// ─── Projects ─────────────────────────────────────────────────────────────────
 function projectCard(p, idx) {
   const tags = p.tags.map(t => `<span class="badge">${escapeHtml(t)}</span>`).join("");
-  const gh   = p.links.github ? `<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub →</a>` : "";
-  const live = p.links.live && p.links.live !== "#" ? `<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live →</a>` : "";
+  const gh   = p.links.github
+    ? `<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub →</a>` : "";
+  const live = p.links.live && p.links.live !== "#"
+    ? `<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live →</a>` : "";
   return `
     <article class="card">
       <div class="project-top"><h3>${escapeHtml(p.title)}</h3></div>
@@ -159,16 +170,11 @@ function projectCard(p, idx) {
       </div>
     </article>`;
 }
+$("#projectsGrid").innerHTML = state.projects.map(projectCard).join("");
 
-function renderProjects() {
-  $("#projectsGrid").innerHTML = state.projects.map(projectCard).join("");
-}
-renderProjects();
-
-// ─── Render writeups ──────────────────────────────────────────────────────────
+// ─── Writeups ─────────────────────────────────────────────────────────────────
 function writeupCard(w) {
-  const isPlaceholder = w.href === "#";
-  const action = isPlaceholder
+  const action = w.href === "#"
     ? `<span class="link link-disabled">Coming soon</span>`
     : `<a class="link" href="${w.href}">Read →</a>`;
   return `
@@ -181,15 +187,7 @@ function writeupCard(w) {
       <div class="card-actions">${action}</div>
     </article>`;
 }
-
-function renderWriteups() {
-  $("#writeupsGrid").innerHTML = state.writeups.map(writeupCard).join("");
-}
-renderWriteups();
-
-// Start watching stats
-const statsEl = $(".stats");
-if (statsEl) statsObserver.observe(statsEl);
+$("#writeupsGrid").innerHTML = state.writeups.map(writeupCard).join("");
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 const modal      = $("#modal");
@@ -200,13 +198,12 @@ const modalFoot  = $("#modalFoot");
 function openModal(idx) {
   const p = state.projects[idx];
   if (!p) return;
-  modalTitle.textContent = p.title;
   const cs = p.caseStudy;
+  modalTitle.textContent = p.title;
   modalBody.innerHTML = `
     <p>${escapeHtml(p.desc)}</p>
     <hr class="sep" />
-    <h4>Problem</h4>
-    <p>${escapeHtml(cs.problem)}</p>
+    <h4>Problem</h4><p>${escapeHtml(cs.problem)}</p>
     <h4>Approach</h4>
     <ul>${cs.approach.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
     <h4>Results</h4>
@@ -214,8 +211,10 @@ function openModal(idx) {
     <h4>Stack</h4>
     <p>${cs.stack.map(s => `<span class="badge">${escapeHtml(s)}</span>`).join(" ")}</p>`;
   const links = [];
-  if (p.links.github) links.push(`<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub →</a>`);
-  if (p.links.live && p.links.live !== "#") links.push(`<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live →</a>`);
+  if (p.links.github)
+    links.push(`<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub →</a>`);
+  if (p.links.live && p.links.live !== "#")
+    links.push(`<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live →</a>`);
   modalFoot.innerHTML = links.join("");
   modal.removeAttribute("hidden");
   document.body.style.overflow = "hidden";
@@ -226,12 +225,12 @@ function closeModal() {
   document.body.style.overflow = "";
 }
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", e => {
   const btn = e.target.closest("[data-open]");
   if (btn) { openModal(Number(btn.getAttribute("data-open"))); return; }
   if (e.target.matches("[data-close]") || e.target.closest("[data-close]")) closeModal();
 });
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !modal.hasAttribute("hidden")) closeModal();
 });
 
@@ -240,9 +239,8 @@ const contactForm = $("#contactForm");
 const formStatus  = $("#formStatus");
 const submitBtn   = $("#submitBtn");
 
-contactForm.addEventListener("submit", async (e) => {
+contactForm.addEventListener("submit", async e => {
   e.preventDefault();
-
   submitBtn.disabled = true;
   submitBtn.textContent = "Sending…";
   formStatus.textContent = "";
@@ -260,7 +258,7 @@ contactForm.addEventListener("submit", async (e) => {
       contactForm.reset();
     } else {
       const json = await res.json().catch(() => ({}));
-      formStatus.textContent = `✗ ${json?.errors?.[0]?.message || "Something went wrong. Try emailing directly."}`;
+      formStatus.textContent = `✗ ${json?.errors?.[0]?.message || "Something went wrong — try emailing directly."}`;
       formStatus.className = "form-status form-error";
     }
   } catch {
@@ -275,7 +273,7 @@ contactForm.addEventListener("submit", async (e) => {
 // ─── Footer year ──────────────────────────────────────────────────────────────
 $("#year").textContent = String(new Date().getFullYear());
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── XSS-safe escaping ────────────────────────────────────────────────────────
 function escapeHtml(str) {
   return String(str)
     .replaceAll("&", "&amp;")

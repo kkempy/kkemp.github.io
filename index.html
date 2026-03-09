@@ -3,18 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Cyber Security graduate portfolio - projects, skills, and writeups." />
-  <title>KKemp - Cyber Security Portfolio</title>
-
+  <meta name="description" content="KKemp — BSc Computer Science (Cyber Security) graduate. Projects, writeups and skills in web security, AppSec and secure development." />
+  <title>KKemp — Cyber Security Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Clean UI font + optional mono font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Top progress bar -->
+
   <div class="scroll-progress" aria-hidden="true"></div>
 
   <header class="site-header">
@@ -23,7 +20,6 @@
         <span class="brand-mark" aria-hidden="true">K</span>
         <span class="brand-text">KKemp</span>
       </a>
-
       <nav class="nav" aria-label="Primary">
         <a href="#projects">Projects</a>
         <a href="#skills">Skills</a>
@@ -31,16 +27,13 @@
         <a href="#about">About</a>
         <a href="#contact" class="btn btn-small">Contact</a>
       </nav>
-
       <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle theme">
-        <span id="themeIcon" aria-hidden="true">Moon</span>
+        <span id="themeIcon" aria-hidden="true"></span>
       </button>
-
       <button class="icon-btn mobile-only" id="menuBtn" type="button" aria-label="Open menu">
-        Menu
+        <span id="menuIcon" aria-hidden="true"></span>
       </button>
     </div>
-
     <div class="mobile-menu container" id="mobileMenu" hidden>
       <a href="#projects">Projects</a>
       <a href="#skills">Skills</a>
@@ -51,54 +44,60 @@
   </header>
 
   <main id="top">
+
     <!-- HERO -->
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-left">
           <p class="pill">
             <span class="dot"></span>
-            Cyber Security - Final-year student
+            BSc Computer Science (Cyber Security) · Final year · Open to opportunities
           </p>
 
           <h1>
-            Building secure systems<br />
-            <span class="gradient-text">and clean interfaces.</span>
+            Curious about security.<br />
+            <span class="gradient-text">Serious about shipping things.</span>
           </h1>
 
           <p class="lead">
-            I'm a cyber security graduate in my final year. I enjoy web security, networking,
-            and building polished front-ends for security tooling and demos.
+            I'm a final-year Computer Science student specialising in Cyber Security.
+            I enjoy building things — clean UIs, security tooling, and anything that sits
+            at the intersection of the two. I'm at the start of my career and actively
+            looking for graduate roles where I can learn fast and contribute from day one.
           </p>
 
           <div class="hero-cta">
             <a class="btn" href="#projects">View Projects</a>
             <a class="btn btn-ghost" href="#contact">Get in touch</a>
-            
           </div>
 
           <div class="social-row">
-            <a class="chip" href="https://github.com/kkempy" target="_blank" rel="noreferrer">GitHub -></a>
-            <a class="chip" href="#writeups">Blog / Writeups</a>
+            <a class="chip" href="https://github.com/kkempy" target="_blank" rel="noreferrer">GitHub →</a>
+            <!-- When you have a TryHackMe profile, add it like this:
+            <a class="chip" href="https://tryhackme.com/p/YOUR_USERNAME" target="_blank" rel="noreferrer">TryHackMe →</a>
+            -->
+            <a class="chip" href="#writeups">Writeups</a>
           </div>
         </div>
 
-        <!-- Terminal card -->
         <div class="hero-right">
           <div class="terminal" role="region" aria-label="Terminal introduction">
             <div class="terminal-bar">
               <span class="t-dot red"></span>
               <span class="t-dot yellow"></span>
               <span class="t-dot green"></span>
-              <span class="terminal-title">portfolio.me</span>
+              <span class="terminal-title">kkemp.sh</span>
             </div>
-            <pre class="terminal-body"><code><span class="muted">$</span> WhoAmI
-<span class="accent">Cyber Security Student</span>
+<pre class="terminal-body"><code><span class="t-muted">$</span> whoami
+<span class="t-accent">BSc Computer Science (Cyber Security)</span>
 
-<span class="muted">$</span> Focus
-Web Security - Networking - Secure Dev
+<span class="t-muted">$</span> cat interests.txt
+Web security · AppSec · Secure dev · UI
 
-<span class="muted">$</span> Now
-Building projects + writeups to show real skills.</code></pre>
+<span class="t-muted">$</span> git log --oneline
+Ship walk-away lock (Python + OpenCV)
+Launch portfolio at kkemp.co.uk
+Write recon, XSS and DNS notes</code></pre>
           </div>
 
           <div class="stats">
@@ -111,24 +110,20 @@ Building projects + writeups to show real skills.</code></pre>
               <div class="stat-label">Writeups</div>
             </div>
             <div class="stat">
-              <div class="stat-num" id="statLabs">0</div>
-              <div class="stat-label">Labs</div>
+              <div class="stat-num" id="statRooms">0</div>
+              <div class="stat-label">THM Rooms</div>
             </div>
           </div>
         </div>
       </div>
-
     </section>
 
     <!-- PROJECTS -->
     <section class="section" id="projects">
       <div class="container section-head">
         <h2>Featured Projects</h2>
-        <p class="muted">
-          Projects are shown as mini case studies. Add your GitHub links and short writeups.
-        </p>
+        <p class="muted">Click any project to open the full case study.</p>
       </div>
-
       <div class="container grid" id="projectsGrid" aria-live="polite"></div>
     </section>
 
@@ -136,38 +131,38 @@ Building projects + writeups to show real skills.</code></pre>
     <section class="section" id="skills">
       <div class="container section-head">
         <h2>Skills</h2>
-        <p class="muted">A quick, scannable overview (recruiters love this).</p>
+        <p class="muted">What I've picked up through my degree, projects and self-study.</p>
       </div>
-
       <div class="container skills-grid">
         <div class="card">
           <h3>Cyber Security</h3>
           <ul class="list">
-            <li>Web app security (OWASP Top 10)</li>
-            <li>Recon & enumeration</li>
-            <li>Burp Suite workflows</li>
-            <li>Threat modeling basics</li>
-            <li>Secure coding mindset</li>
+            <li>Web application security (OWASP Top 10)</li>
+            <li>Recon &amp; enumeration techniques</li>
+            <li>Burp Suite — proxying, scanning, repeater</li>
+            <li>Threat modelling fundamentals</li>
+            <li>Secure coding — input validation, output encoding</li>
+            <li>Basic log analysis &amp; triage</li>
           </ul>
         </div>
-
         <div class="card">
           <h3>Technical</h3>
           <ul class="list">
-            <li>Linux, Bash, Git</li>
-            <li>Networking fundamentals (TCP/IP, DNS, HTTP)</li>
-            <li>Python basics for automation</li>
-            <li>Logs & triage (basic)</li>
+            <li>Python — scripting, automation, computer vision</li>
+            <li>Java, SQL/MySQL, PHP, PowerShell</li>
+            <li>Linux, Bash &amp; Git</li>
+            <li>Networking: TCP/IP, DNS, HTTP/S</li>
+            <li>OpenCV &amp; Mediapipe</li>
           </ul>
         </div>
-
         <div class="card">
-          <h3>UI / Frontend</h3>
+          <h3>UI &amp; Frontend</h3>
           <ul class="list">
-            <li>Accessible HTML structure</li>
-            <li>Responsive CSS layouts</li>
-            <li>Modern UI patterns (cards, modals, theming)</li>
-            <li>Vanilla JS for interactivity</li>
+            <li>Semantic, accessible HTML</li>
+            <li>Responsive CSS — layouts, custom properties, theming</li>
+            <li>Vanilla JavaScript — DOM, fetch, async/await</li>
+            <li>Security-aware rendering (XSS-safe output)</li>
+            <li>GitHub Pages — static site hosting</li>
           </ul>
         </div>
       </div>
@@ -177,9 +172,8 @@ Building projects + writeups to show real skills.</code></pre>
     <section class="section" id="writeups">
       <div class="container section-head">
         <h2>Writeups</h2>
-        <p class="muted">Short posts about what you learned (great signal).</p>
+        <p class="muted">Notes on what I've been learning. Written to actually understand it, not just to fill a page.</p>
       </div>
-
       <div class="container grid" id="writeupsGrid"></div>
     </section>
 
@@ -188,30 +182,49 @@ Building projects + writeups to show real skills.</code></pre>
       <div class="container section-head">
         <h2>About</h2>
       </div>
-
       <div class="container about-grid">
         <div class="card">
-          <h3>My approach</h3>
+          <h3>A bit about me</h3>
           <p class="muted">
-            I like projects that show a security mindset: clear scope, method, results, and
-            what I'd do differently next time.
+            Final-year BSc Computer Science (Cyber Security) student, on track for a 2:1.
+            I enjoy the problem-solving side of security — figuring out how things break
+            and why — and I'm equally drawn to building polished, well-designed interfaces.
           </p>
-          <p class="muted">
-            I also care about UI - even internal tooling should be usable, readable, and accessible.
+          <p class="muted" style="margin-top:10px;">
+            Outside of tech I'm into football, rugby, 3D printing and CAD design, and
+            tinkering with hardware. I do my own vehicle maintenance — I like understanding
+            how things work at a low level, whether that's software or something mechanical.
+          </p>
+          <p class="muted" style="margin-top:10px;">
+            I've worked in retail since 2022 across multiple departments — cash handling,
+            stock management, and compliance. It's taught me to stay accurate and reliable
+            under pressure, which carries over.
           </p>
         </div>
-
         <div class="card">
           <h3>What I'm looking for</h3>
           <p class="muted">
-            Graduate roles / placements in security (AppSec, SOC, pentesting) or security-adjacent
-            developer roles where I can ship secure features.
+            Honestly, I'm open. I want a graduate role or placement where the work is
+            interesting and I can keep growing. That could be AppSec, secure software
+            development, a SOC role, or something UI-adjacent where security matters.
+            I care more about the team and the learning than the exact job title.
           </p>
-          <div class="tags">
+          <div class="tags" style="margin-top:14px;">
             <span class="tag">AppSec</span>
-            <span class="tag">SOC</span>
-            <span class="tag">Pentest</span>
             <span class="tag">Secure Dev</span>
+            <span class="tag">Penetration Testing</span>
+            <span class="tag">SOC</span>
+            <span class="tag">Graduate roles</span>
+          </div>
+          <div style="margin-top:16px; padding:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--panel);">
+            <p class="muted small" style="margin:0 0 10px; font-weight:600;">Relevant modules</p>
+            <div class="tags">
+              <span class="tag">Blockchain &amp; Distributed Systems</span>
+              <span class="tag">Natural Language Processing</span>
+              <span class="tag">Web Development</span>
+              <span class="tag">Intro to AI</span>
+              <span class="tag">Algorithms, Correctness &amp; Efficiency</span>
+            </div>
           </div>
         </div>
       </div>
@@ -221,46 +234,50 @@ Building projects + writeups to show real skills.</code></pre>
     <section class="section" id="contact">
       <div class="container section-head">
         <h2>Contact</h2>
-        <p class="muted">Quick message + links.</p>
+        <p class="muted">Open to opportunities, questions, or just a conversation about security.</p>
       </div>
-
       <div class="container contact-grid">
         <div class="card">
-          <h3>Email</h3>
-          <p class="muted">Prefer email? That's easiest.</p>
-          <a class="btn" href="mailto:you@example.com">you@example.com</a>
+          <h3>Get in touch</h3>
+          <p class="muted">Email is the best way to reach me.</p>
+          <a class="btn" href="mailto:contactme@kkemp.co.uk">contactme@kkemp.co.uk</a>
           <div class="spacer"></div>
           <p class="muted small">
-            Add your CV to <span class="mono">/assets/KKemp-CV.pdf</span> and update the link.
+            Find me on <a href="https://github.com/kkempy" target="_blank" rel="noreferrer" class="inline-link">GitHub</a>
+            to see what I've been building.
           </p>
         </div>
-
-        <form class="card" id="contactForm">
+        <form class="card" id="contactForm" novalidate>
           <h3>Send a message</h3>
           <label>
             <span>Name</span>
-            <input name="name" autocomplete="name" required />
+            <input name="name" autocomplete="name" required placeholder="Your name" />
           </label>
           <label>
             <span>Email</span>
-            <input name="email" type="email" autocomplete="email" required />
+            <input name="email" type="email" autocomplete="email" required placeholder="your@email.com" />
           </label>
           <label>
             <span>Message</span>
-            <textarea name="message" rows="5" required></textarea>
+            <textarea name="message" rows="5" required placeholder="What's on your mind?"></textarea>
           </label>
-          <button class="btn" type="submit">Create email draft</button>
-          <p class="muted small">This opens your email app with the message pre-filled (no backend needed).</p>
+          <button class="btn" type="submit" id="submitBtn">Send message</button>
+          <p id="formStatus" class="form-status" aria-live="polite"></p>
+          <p class="muted small" style="margin-top:8px;">
+            Powered by <a href="https://formspree.io" target="_blank" rel="noreferrer" class="inline-link">Formspree</a>
+            — goes straight to my inbox, no backend needed.
+          </p>
         </form>
       </div>
     </section>
 
     <footer class="footer">
       <div class="container footer-inner">
-        <p class="muted small">(c) <span id="year"></span> KKemp - Built with HTML/CSS/JS - Hosted on GitHub Pages</p>
-        <a class="muted small" href="#top">Back to top ^</a>
+        <p class="muted small">© <span id="year"></span> KKemp · Vanilla HTML/CSS/JS · GitHub Pages</p>
+        <a class="muted small" href="#top">Back to top ↑</a>
       </div>
     </footer>
+
   </main>
 
   <!-- Modal -->
@@ -269,13 +286,16 @@ Building projects + writeups to show real skills.</code></pre>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modal-head">
         <h3 id="modalTitle">Project</h3>
-        <button class="icon-btn" type="button" data-close aria-label="Close modal">X</button>
+        <button class="icon-btn" type="button" data-close aria-label="Close modal">
+          <span id="modalCloseIcon" aria-hidden="true"></span>
+        </button>
       </div>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-foot" id="modalFoot"></div>
     </div>
   </div>
 
+  <!-- script MUST stay at the bottom of body -->
   <script src="script.js"></script>
 </body>
 </html>
