@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="NLP — what I actually learned from my university module. Tokenisation, embeddings, transformers, and why it matters for security." />
+  <title>NLP: What I Actually Learned — KKemp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: rgba(255,255,255,0.06);
+      --panel-2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.60);
+      --border: rgba(255,255,255,0.10);
+      --accent: #7c5cff;
+      --accent-2: #2dd4bf;
+      --radius: 14px;
+      --max: 740px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(900px 500px at 80% 0%, rgba(124,92,255,0.15), transparent 60%),
+                  radial-gradient(700px 400px at 0% 30%, rgba(45,212,191,0.10), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding-bottom: 80px;
+    }
+    a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { opacity: 0.8; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 40;
+      backdrop-filter: blur(14px);
+      background: rgba(11,15,20,0.75);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: var(--max); margin: 0 auto; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-weight: 700; font-size: 0.95rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-brand span {
+      width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--panel); display: grid; place-items: center; font-size: 0.85rem;
+    }
+    .nav-back { font-size: 0.88rem; font-weight: 600; color: var(--muted); text-decoration: none; }
+    .nav-back:hover { color: var(--text); }
+
+    .article { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+    .post-header { padding: 52px 0 36px; border-bottom: 1px solid var(--border); }
+    .post-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tag {
+      font-family: "JetBrains Mono", monospace; font-size: 0.78rem;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--muted); background: var(--panel);
+    }
+    .post-date { font-size: 0.88rem; color: var(--muted); }
+    h1 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px; }
+    .post-lead { font-size: 1.08rem; color: var(--muted); line-height: 1.65; }
+
+    .post-body { padding-top: 36px; }
+    .post-body h2 { font-size: 1.3rem; letter-spacing: -0.02em; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .post-body h3 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--accent-2); }
+    .post-body p { margin-bottom: 16px; color: var(--muted); }
+    .post-body strong { color: var(--text); font-weight: 600; }
+    .post-body ul, .post-body ol { margin: 0 0 16px 20px; color: var(--muted); }
+    .post-body li { margin-bottom: 6px; }
+
+    .code-block {
+      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px; margin: 20px 0; overflow-x: auto;
+    }
+    .code-block pre { font-family: "JetBrains Mono", monospace; font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.82); }
+    .code-block .cm { color: #6b7280; }
+    .code-block .kw { color: #a78bfa; }
+    .code-block .fn { color: #2dd4bf; }
+    .code-block .st { color: #86efac; }
+    .code-block .nm { color: #fbbf24; }
+
+    .callout {
+      border-left: 3px solid var(--accent-2);
+      background: rgba(45,212,191,0.06);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 18px; margin: 24px 0;
+    }
+    .callout p { margin: 0; color: var(--muted); font-size: 0.96rem; }
+    .callout strong { color: var(--accent-2); }
+
+    .pipeline {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      margin: 20px 0; padding: 20px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--panel);
+      font-family: "JetBrains Mono", monospace; font-size: 0.82rem;
+    }
+    .pipeline .step {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; background: rgba(0,0,0,0.25); color: var(--text);
+    }
+    .pipeline .arr { color: var(--accent-2); font-size: 1rem; }
+
+    .embed-example {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--panel); padding: 18px; margin: 20px 0;
+      font-family: "JetBrains Mono", monospace; font-size: 0.83rem;
+    }
+    .embed-example .word { color: var(--accent-2); font-weight: 600; }
+    .embed-example .vec { color: var(--muted); }
+
+    .post-footer {
+      margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .post-footer a { font-weight: 600; font-size: 0.92rem; color: var(--muted); text-decoration: none; }
+    .post-footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="../index.html"><span>K</span> KKemp</a>
+      <a class="nav-back" href="../index.html#writeups">← Back to writeups</a>
+    </div>
+  </nav>
+
+  <article class="article">
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="tag">NLP</span>
+        <span class="tag">Machine Learning</span>
+        <span class="tag">Security</span>
+        <span class="post-date">January 2026</span>
+      </div>
+      <h1>NLP: What I Actually Learned</h1>
+      <p class="post-lead">
+        Notes from my Natural Language Processing module — what clicked, what didn't at first,
+        and why NLP turns up more often in security than most people expect.
+      </p>
+    </header>
+
+    <div class="post-body">
+
+      <h2>What NLP Actually Is</h2>
+      <p>
+        Natural Language Processing is the field of getting computers to understand, interpret,
+        and generate human language. That sounds straightforward until you realise how much
+        implicit context humans pack into ordinary sentences — sarcasm, ambiguity, cultural
+        references, typos that still make sense.
+      </p>
+      <p>
+        The module covered the core pipeline from raw text to something a model can work with.
+        That pipeline is where most of the interesting (and painful) work happens.
+      </p>
+
+      <div class="pipeline">
+        <div class="step">Raw text</div>
+        <span class="arr">→</span>
+        <div class="step">Tokenisation</div>
+        <span class="arr">→</span>
+        <div class="step">Normalisation</div>
+        <span class="arr">→</span>
+        <div class="step">Embeddings</div>
+        <span class="arr">→</span>
+        <div class="step">Model</div>
+        <span class="arr">→</span>
+        <div class="step">Output</div>
+      </div>
+
+      <h2>Tokenisation — Not as Simple as Splitting on Spaces</h2>
+      <p>
+        Tokenisation is splitting text into units (tokens) that the model can process.
+        The naive approach — split on whitespace — falls apart immediately in practice.
+      </p>
+
+      <div class="code-block"><pre><span class="cm"># Naive split — breaks on punctuation, contractions, etc.</span>
+text   = <span class="st">"I can't believe it's not butter."</span>
+tokens = text.<span class="fn">split</span>()
+<span class="cm"># ["I", "can't", "believe", "it's", "not", "butter."]
+# "butter." still has the period attached — that's a problem</span>
+
+<span class="cm"># Better: use a proper tokeniser</span>
+<span class="kw">import</span> nltk
+tokens = nltk.word_tokenize(text)
+<span class="cm"># ["I", "ca", "n't", "believe", "it", "'s", "not", "butter", "."]</span></pre></div>
+
+      <p>
+        Notice how <code>can't</code> becomes <code>ca</code> + <code>n't</code>. That's
+        intentional — it separates the root word from the negation marker, which matters
+        for sentiment analysis. The tokeniser is making linguistic decisions, not just
+        splitting strings.
+      </p>
+
+      <h3>Subword tokenisation</h3>
+      <p>
+        Modern models (like BERT and GPT) use subword tokenisation — words get broken into
+        smaller pieces based on frequency in the training data. The word "unhappiness" might
+        become <code>["un", "##happ", "##iness"]</code>. This handles rare words and typos
+        better than whole-word approaches because it can still encode meaning from the
+        subcomponents it has seen before.
+      </p>
+
+      <h2>Word Embeddings — Turning Words Into Numbers</h2>
+      <p>
+        Models can't process strings — everything has to become numbers. Embeddings are
+        the standard solution: each word gets mapped to a dense vector (a list of floats)
+        that represents its meaning in a high-dimensional space.
+      </p>
+
+      <div class="embed-example">
+        <p><span class="word">king</span>   <span class="vec">→ [0.21, -0.45, 0.88, 0.13, ...]</span></p>
+        <p><span class="word">queen</span>  <span class="vec">→ [0.19, -0.42, 0.71, 0.35, ...]</span></p>
+        <p><span class="word">cat</span>    <span class="vec">→ [-0.55, 0.67, -0.12, 0.90, ...]</span></p>
+      </div>
+
+      <p>
+        What makes embeddings powerful is that words with similar meanings end up close to
+        each other in the vector space. The classic demonstration is the word arithmetic:
+      </p>
+      <div class="code-block"><pre><span class="cm"># vector("king") - vector("man") + vector("woman") ≈ vector("queen")</span>
+<span class="cm"># The model has encoded semantic relationships as geometric relationships</span></pre></div>
+
+      <div class="callout">
+        <p>
+          <strong>This is the same concept as facial recognition encodings.</strong>
+          Both convert something complex (a face, a word) into a vector where
+          similarity in meaning corresponds to proximity in space. The maths is
+          the same — Euclidean or cosine distance.
+        </p>
+      </div>
+
+      <h2>What the Module Covered in Practice</h2>
+      <h3>Sentiment analysis</h3>
+      <p>
+        Classifying text as positive, negative, or neutral. The tricky cases are negation
+        ("not bad" is positive) and context-dependent words ("sick" is negative in most
+        contexts, positive in slang). This was one of the first hands-on tasks — building
+        a basic classifier using labelled review data.
+      </p>
+
+      <h3>Named entity recognition (NER)</h3>
+      <p>
+        Identifying proper nouns in text — people, places, organisations, dates. Useful for
+        information extraction at scale. A model trained on news articles can pull out
+        every person and location mentioned across thousands of documents in seconds.
+      </p>
+
+      <h3>Text classification</h3>
+      <p>
+        Given a piece of text, assign it a category — spam vs not spam, malicious vs benign,
+        topic classification. This is where the security relevance becomes direct.
+      </p>
+
+      <h2>Why NLP Keeps Showing Up in Security</h2>
+      <h3>Phishing detection</h3>
+      <p>
+        Email filtering at scale uses NLP to flag phishing attempts. A model trained on
+        known phishing emails learns patterns — urgency language, impersonation phrases,
+        suspicious sender patterns combined with body text analysis. Simple regex rules
+        get evaded easily; a classifier trained on embeddings is much harder to fool.
+      </p>
+
+      <h3>Log analysis and threat detection</h3>
+      <p>
+        Security logs are just text. NLP techniques — specifically anomaly detection on
+        sequences — can flag unusual patterns in log streams. If a sequence of log entries
+        looks statistically unlike anything seen before, that's worth investigating.
+      </p>
+
+      <h3>Malware analysis</h3>
+      <p>
+        Malware often includes strings — error messages, function names, hardcoded URLs.
+        Classifiers trained on string data can distinguish benign software from malicious
+        samples with reasonable accuracy, even without running the code.
+      </p>
+
+      <h3>LLMs as an attack surface</h3>
+      <p>
+        This is the newest angle. Large language models themselves are now targets.
+        Prompt injection — hiding instructions in user-supplied input that cause the model
+        to ignore its system instructions — is an active area of security research.
+        Understanding how tokenisation and context windows work is directly relevant to
+        understanding these attacks.
+      </p>
+
+      <h2>What I Found Hard</h2>
+      <p>
+        The gap between "I understand the concept" and "I can build it" was steeper than
+        expected. Getting a sentiment classifier working was straightforward. Getting it to
+        handle negation properly, or sarcasm, or domain-specific language, was much harder.
+        The model doesn't understand language — it's learned statistical patterns from
+        training data, and when you stray from that distribution, it breaks.
+      </p>
+      <p>
+        That framing — models as pattern matchers, not comprehenders — changed how I think
+        about using them in security contexts. They're useful tools but they fail in
+        predictable ways when the input doesn't resemble training data, and attackers will
+        find those edges.
+      </p>
+
+    </div>
+
+    <footer class="post-footer">
+      <a href="keystroke-mouse-tracking.html">← Keystroke &amp; Mouse Tracking</a>
+      <a href="../index.html#writeups">All writeups</a>
+    </footer>
+  </article>
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Keystroke and mouse tracking — what I built, how it works at a low level, and why it's a serious privacy concern." />
+  <title>Keystroke &amp; Mouse Tracking: What I Built and Why It Matters — KKemp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: rgba(255,255,255,0.06);
+      --panel-2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.60);
+      --border: rgba(255,255,255,0.10);
+      --accent: #7c5cff;
+      --accent-2: #2dd4bf;
+      --radius: 14px;
+      --max: 740px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(900px 500px at 80% 0%, rgba(124,92,255,0.15), transparent 60%),
+                  radial-gradient(700px 400px at 0% 30%, rgba(45,212,191,0.10), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding-bottom: 80px;
+    }
+    a { color: var(--accent-2); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { opacity: 0.8; }
+
+    .nav {
+      position: sticky; top: 0; z-index: 40;
+      backdrop-filter: blur(14px);
+      background: rgba(11,15,20,0.75);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+    .nav-inner {
+      max-width: var(--max); margin: 0 auto;
+      height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand {
+      font-weight: 700; font-size: 0.95rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-brand span {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--panel);
+      display: grid; place-items: center; font-size: 0.85rem;
+    }
+    .nav-back { font-size: 0.88rem; font-weight: 600; color: var(--muted); text-decoration: none; }
+    .nav-back:hover { color: var(--text); }
+
+    .article { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+    .post-header { padding: 52px 0 36px; border-bottom: 1px solid var(--border); }
+    .post-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tag {
+      font-family: "JetBrains Mono", monospace; font-size: 0.78rem;
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--muted); background: var(--panel);
+    }
+    .post-date { font-size: 0.88rem; color: var(--muted); }
+    h1 { font-size: clamp(26px, 4vw, 38px); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px; }
+    .post-lead { font-size: 1.08rem; color: var(--muted); line-height: 1.65; }
+
+    .post-body { padding-top: 36px; }
+    .post-body h2 { font-size: 1.3rem; letter-spacing: -0.02em; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .post-body h3 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--accent-2); }
+    .post-body p { margin-bottom: 16px; color: var(--muted); }
+    .post-body strong { color: var(--text); font-weight: 600; }
+    .post-body ul, .post-body ol { margin: 0 0 16px 20px; color: var(--muted); }
+    .post-body li { margin-bottom: 6px; }
+
+    .code-block {
+      background: rgba(0,0,0,0.35); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 20px; margin: 20px 0; overflow-x: auto;
+    }
+    .code-block pre { font-family: "JetBrains Mono", monospace; font-size: 0.85rem; line-height: 1.6; color: rgba(255,255,255,0.82); }
+    .code-block .cm { color: #6b7280; }
+    .code-block .kw { color: #a78bfa; }
+    .code-block .fn { color: #2dd4bf; }
+    .code-block .st { color: #86efac; }
+    .code-block .nm { color: #fbbf24; }
+
+    .callout {
+      border-left: 3px solid var(--accent-2);
+      background: rgba(45,212,191,0.06);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 18px; margin: 24px 0;
+    }
+    .callout p { margin: 0; color: var(--muted); font-size: 0.96rem; }
+    .callout strong { color: var(--accent-2); }
+
+    .warning {
+      border-left: 3px solid #f59e0b;
+      background: rgba(245,158,11,0.06);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 18px; margin: 24px 0;
+    }
+    .warning p { margin: 0; color: var(--muted); font-size: 0.96rem; }
+    .warning strong { color: #fbbf24; }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0;
+    }
+    .two-col .card {
+      border: 1px solid var(--border); background: var(--panel);
+      border-radius: var(--radius); padding: 14px;
+    }
+    .two-col .card h4 { font-size: 0.9rem; margin-bottom: 8px; color: var(--text); }
+    .two-col .card ul { margin: 0 0 0 14px; font-size: 0.88rem; }
+    @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+    .post-footer {
+      margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    .post-footer a { font-weight: 600; font-size: 0.92rem; color: var(--muted); text-decoration: none; }
+    .post-footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="../index.html"><span>K</span> KKemp</a>
+      <a class="nav-back" href="../index.html#writeups">← Back to writeups</a>
+    </div>
+  </nav>
+
+  <article class="article">
+    <header class="post-header">
+      <div class="post-meta">
+        <span class="tag">Security</span>
+        <span class="tag">Python</span>
+        <span class="tag">Privacy</span>
+        <span class="post-date">February 2026</span>
+      </div>
+      <h1>Keystroke &amp; Mouse Tracking:<br />What I Built and Why It Matters</h1>
+      <p class="post-lead">
+        I built a basic input logger in Python to understand how it works at a low level.
+        Then I looked at how the same techniques get weaponised — and what that means for
+        detection and defence.
+      </p>
+    </header>
+
+    <div class="post-body">
+
+      <div class="warning">
+        <p><strong>Context:</strong> This was built on my own machine for learning purposes only.
+        Deploying input loggers without explicit consent is illegal in the UK under the
+        Computer Misuse Act 1990. Understanding how attacks work is essential for defending
+        against them.</p>
+      </div>
+
+      <h2>Why I Looked Into This</h2>
+      <p>
+        My walk-away lock project got me thinking about the boundary between presence detection
+        and surveillance. If you can detect <em>that</em> someone is at a keyboard, the next
+        question is — what are they doing? Input logging sits right at that boundary.
+        It's one of the most common techniques in both legitimate monitoring software and
+        malware, so understanding it properly felt important.
+      </p>
+
+      <h2>How Keystroke Logging Works</h2>
+      <p>
+        At the OS level, every keypress generates an event that gets passed through an input
+        processing chain. A keylogger hooks into this chain — either at the application layer
+        or lower down at the kernel/driver level — and intercepts those events before or
+        alongside the intended recipient.
+      </p>
+
+      <div class="two-col">
+        <div class="card">
+          <h4>User-space (application level)</h4>
+          <ul>
+            <li>Easier to implement</li>
+            <li>Easier to detect</li>
+            <li>Limited to foreground app on some OSes</li>
+            <li>Example: Python's pynput</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Kernel-space (driver level)</h4>
+          <ul>
+            <li>Harder to implement</li>
+            <li>Much harder to detect</li>
+            <li>Captures all input system-wide</li>
+            <li>Used in serious malware</li>
+          </ul>
+        </div>
+      </div>
+
+      <p>
+        I worked at the user-space level using <code>pynput</code>, which gives you
+        cross-platform keyboard and mouse listener hooks without needing kernel access.
+      </p>
+
+      <h2>What I Built</h2>
+      <h3>Basic keyboard listener</h3>
+
+      <div class="code-block"><pre><span class="kw">from</span> pynput <span class="kw">import</span> keyboard
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+log_file = <span class="st">"keylog.txt"</span>
+
+<span class="kw">def</span> <span class="fn">on_press</span>(key):
+    timestamp = datetime.<span class="fn">now</span>().<span class="fn">strftime</span>(<span class="st">"%H:%M:%S"</span>)
+    <span class="kw">try</span>:
+        <span class="cm"># Regular character key</span>
+        entry = <span class="st">f"[{timestamp}] {key.char}\n"</span>
+    <span class="kw">except</span> AttributeError:
+        <span class="cm"># Special key (shift, ctrl, enter etc.)</span>
+        entry = <span class="st">f"[{timestamp}] [{key}]\n"</span>
+
+    <span class="kw">with</span> <span class="fn">open</span>(log_file, <span class="st">"a"</span>) <span class="kw">as</span> f:
+        f.<span class="fn">write</span>(entry)
+
+<span class="kw">with</span> keyboard.<span class="fn">Listener</span>(on_press=on_press) <span class="kw">as</span> listener:
+    listener.<span class="fn">join</span>()</pre></div>
+
+      <p>
+        This captures every keypress with a timestamp — including special keys like Enter,
+        Backspace, and modifier keys. The output immediately makes clear why this is dangerous:
+        you can reconstruct passwords, search queries, messages, and anything else typed.
+      </p>
+
+      <h3>Adding mouse tracking</h3>
+
+      <div class="code-block"><pre><span class="kw">from</span> pynput <span class="kw">import</span> mouse
+
+<span class="kw">def</span> <span class="fn">on_click</span>(x, y, button, pressed):
+    <span class="kw">if</span> pressed:
+        timestamp = datetime.<span class="fn">now</span>().<span class="fn">strftime</span>(<span class="st">"%H:%M:%S"</span>)
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="st">"mouselog.txt"</span>, <span class="st">"a"</span>) <span class="kw">as</span> f:
+            f.<span class="fn">write</span>(<span class="st">f"[{timestamp}] Click at ({x}, {y}) - {button}\n"</span>)
+
+<span class="kw">with</span> mouse.<span class="fn">Listener</span>(on_click=on_click) <span class="kw">as</span> listener:
+    listener.<span class="fn">join</span>()</pre></div>
+
+      <div class="callout">
+        <p>
+          <strong>Mouse coordinates reveal a lot.</strong> If you know the screen resolution
+          and what app is open, click coordinates can reveal which UI elements were interacted
+          with — buttons, form fields, links. Combined with keystrokes, you can reconstruct
+          a session in significant detail.
+        </p>
+      </div>
+
+      <h2>The Security and Privacy Angle</h2>
+
+      <h3>How malware uses this</h3>
+      <p>
+        In the wild, keyloggers are usually packaged with persistence mechanisms — they write
+        themselves to startup entries (Windows registry, systemd services, cron jobs) so they
+        survive reboots. The log is then exfiltrated either periodically via HTTP/S POST
+        requests, via email, or through a C2 (command and control) server.
+      </p>
+      <p>
+        What makes this particularly hard to detect is that the network traffic looks normal.
+        A POST request with a small encrypted payload every few hours blends in with legitimate
+        application telemetry.
+      </p>
+
+      <h3>Keystroke dynamics as a defence</h3>
+      <p>
+        There's an interesting flip side: the <em>timing</em> of keystrokes — how fast you
+        type, your rhythm, how long you hold each key — is unique enough per person to be
+        used as a behavioural biometric. This is called keystroke dynamics, and it can be
+        used to continuously verify that the person at the keyboard is still the registered
+        user. It's the behavioural equivalent of what I was doing with face recognition.
+      </p>
+
+      <h3>Detection approaches</h3>
+      <ul>
+        <li><strong>Process monitoring</strong> — flag any process that registers a global
+        keyboard hook. Tools like Process Monitor on Windows show this clearly.</li>
+        <li><strong>Network traffic analysis</strong> — periodic small POST requests to
+        unknown endpoints are a red flag, especially if the payload is encrypted.</li>
+        <li><strong>File system monitoring</strong> — watch for new files being written to
+        unusual locations, particularly AppData or temp directories on Windows.</li>
+        <li><strong>Antivirus heuristics</strong> — most AV will flag <code>pynput</code>
+        usage in isolation, though evasion is trivial at this level.</li>
+      </ul>
+
+      <h2>What I Took Away From This</h2>
+      <p>
+        Building it yourself — even a simple version — changes how you think about it.
+        It took about 20 lines to have a working keystroke logger. That's the uncomfortable
+        reality: the barrier to building the offensive tool is very low. The barrier to
+        detecting it reliably, especially at the kernel level, is much higher.
+      </p>
+      <p>
+        It also made me more thoughtful about what runs on my machine. Most people have
+        dozens of apps with input access they've never audited. On Windows, any application
+        can register a low-level keyboard hook without elevated privileges. On macOS,
+        accessibility permissions gate this — which is a meaningfully better model.
+      </p>
+
+    </div>
+
+    <footer class="post-footer">
+      <a href="facial-recognition.html">← Facial Recognition</a>
+      <a href="nlp-what-i-learned.html">Next: NLP — What I Actually Learned →</a>
+    </footer>
+  </article>
+
+</body>
+</html>

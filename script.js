@@ -65,22 +65,22 @@ const state = {
   // href: "/writeups/my-post.html" = published → renders as "Read →"
   writeups: [
     {
-      title: "How I approach web recon",
-      date: "2026-02-12",
-      desc: "My actual workflow: define scope first, go passive before active, map endpoints before you hypothesise. What changes when you do it in the right order.",
-      href: "#"
+      title: "Facial Recognition: How It Actually Works",
+      date: "2026-03-01",
+      desc: "I used facial recognition in my walk-away lock project. Here's what I learned going beyond the library — encodings, distance matching, and where it fails.",
+      href: "writeups/facial-recognition.html"
     },
     {
-      title: "XSS: context, sinks, and what people miss",
-      date: "2026-01-28",
-      desc: "Why 'sanitise your input' isn't enough. The difference between reflected, stored and DOM XSS, why output context matters, and the sinks that catch people out.",
-      href: "#"
+      title: "Keystroke & Mouse Tracking: What I Built and Why It Matters",
+      date: "2026-02-10",
+      desc: "I built a basic input logger in Python to understand how it works, then looked at how the same techniques get weaponised — and what that means for detection.",
+      href: "writeups/keystroke-mouse-tracking.html"
     },
     {
-      title: "DNS for attackers and defenders",
-      date: "2026-01-10",
-      desc: "Records, resolution chains, zone transfers. The misconfigs that keep showing up — dangling CNAMEs, open resolvers, subdomain takeovers — and why they're easy to miss.",
-      href: "#"
+      title: "NLP: What I Actually Learned",
+      date: "2026-01-20",
+      desc: "Notes from my NLP module — tokenisation, embeddings, and why natural language processing keeps showing up in security more than most people expect.",
+      href: "writeups/nlp-what-i-learned.html"
     }
   ]
 };
