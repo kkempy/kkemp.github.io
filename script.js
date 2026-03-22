@@ -6,8 +6,6 @@ const FORMSPREE_ID = "xbdzdjpb";
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const state = {
   theme: localStorage.getItem("theme") || "dark",
-
-  // ── UPDATE THIS as you complete TryHackMe rooms ──
   thmRooms: 0,
 
   projects: [
@@ -61,8 +59,6 @@ const state = {
     }
   ],
 
-  // href: "#" = not published yet → renders as "Coming soon"
-  // href: "/writeups/my-post.html" = published → renders as "Read →"
   writeups: [
     {
       title: "Facial Recognition: How It Actually Works",
@@ -85,11 +81,11 @@ const state = {
   ]
 };
 
-// ─── SVG Icons ────────────────────────────────────────────────────────────────
-const moonSVG  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
-const sunSVG   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-const menuSVG  = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
-const closeSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+// ─── Icons ────────────────────────────────────────────────────────────────────
+const moonSVG  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const sunSVG   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const menuSVG  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+const closeSVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 function applyTheme(theme) {
@@ -98,19 +94,16 @@ function applyTheme(theme) {
   $("#themeIcon").innerHTML = theme === "dark" ? moonSVG : sunSVG;
   state.theme = theme;
 }
-
 applyTheme(state.theme);
 $("#menuIcon").innerHTML       = menuSVG;
 $("#modalCloseIcon").innerHTML = closeSVG;
-
-$("#themeBtn").addEventListener("click", () => {
-  applyTheme(state.theme === "dark" ? "light" : "dark");
-});
+$("#themeBtn").addEventListener("click", () =>
+  applyTheme(state.theme === "dark" ? "light" : "dark")
+);
 
 // ─── Mobile menu ──────────────────────────────────────────────────────────────
 const menuBtn    = $("#menuBtn");
 const mobileMenu = $("#mobileMenu");
-
 menuBtn.addEventListener("click", () => {
   if (mobileMenu.hasAttribute("hidden")) mobileMenu.removeAttribute("hidden");
   else mobileMenu.setAttribute("hidden", "");
@@ -127,16 +120,35 @@ window.addEventListener("scroll", () => {
   $(".scroll-progress").style.width = `${pct}%`;
 }, { passive: true });
 
+// ─── Visitor counter ──────────────────────────────────────────────────────────
+function renderVisitorCounter(num) {
+  const container = $("#visitorCounter");
+  if (!container) return;
+  const raw = String(num).padStart(5, "0");
+  const parts = [raw.slice(0, 2), raw.slice(2, 3), raw.slice(3)];
+  const groups = [parts[0].split(""), [","], parts[1].split(""), [","], parts[2].split("")];
+  container.innerHTML = groups.flat().map(ch =>
+    ch === "," ? `<span class="v-sep">,</span>` : `<span class="v-digit">${escapeHtml(ch)}</span>`
+  ).join("");
+}
+
+function getVisitorCount() {
+  const STORE_KEY = "kkemp_visits";
+  const count = parseInt(localStorage.getItem(STORE_KEY) || "0", 10) + 1;
+  localStorage.setItem(STORE_KEY, String(count));
+  return count;
+}
+renderVisitorCounter(getVisitorCount());
+
 // ─── Animated counter ─────────────────────────────────────────────────────────
 function animateCounter(el, target, duration = 900) {
-  const isPlus = String(target).endsWith("+");
-  const num    = parseInt(target);
-  if (num === 0) { el.textContent = "0"; return; } // skip animation if zero
-  const start  = performance.now();
+  const num  = parseInt(target);
+  if (num === 0) { el.textContent = "0"; return; }
+  const start = performance.now();
   (function step(now) {
     const p     = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - p, 3);
-    el.textContent = Math.floor(eased * num) + (isPlus && p >= 1 ? "+" : "");
+    el.textContent = Math.floor(eased * num);
     if (p < 1) requestAnimationFrame(step);
     else el.textContent = String(target);
   })(start);
@@ -147,22 +159,51 @@ new IntersectionObserver((entries, obs) => {
     if (!entry.isIntersecting) return;
     animateCounter($("#statProjects"), state.projects.length);
     animateCounter($("#statWriteups"), state.writeups.length);
-    animateCounter($("#statRooms"), state.thmRooms);
+    animateCounter($("#statRooms"),    state.thmRooms);
     obs.disconnect();
   });
 }, { threshold: 0.5 }).observe($(".stats"));
 
+// ─── Ticker ───────────────────────────────────────────────────────────────────
+const tickerItems = [
+  "Web Security", "AppSec", "OpenCV", "Python", "Secure Dev",
+  "Penetration Testing", "Burp Suite", "Linux", "OWASP Top 10",
+  "Computer Vision", "JavaScript", "GitHub Pages", "TCP/IP", "Bash"
+];
+function buildTicker() {
+  const track = $("#tickerTrack");
+  if (!track) return;
+  const doubled = [...tickerItems, ...tickerItems];
+  track.innerHTML = doubled.map(item =>
+    `<span class="ticker-item">${escapeHtml(item)}<span class="sep">✦</span></span>`
+  ).join("");
+}
+buildTicker();
+
+// ─── Card spotlight effect ────────────────────────────────────────────────────
+document.addEventListener("mousemove", e => {
+  $$(".card").forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const mx = ((e.clientX - rect.left) / rect.width) * 100;
+    const my = ((e.clientY - rect.top) / rect.height) * 100;
+    card.style.setProperty("--mx", `${mx}%`);
+    card.style.setProperty("--my", `${my}%`);
+  });
+});
+
 // ─── Projects ─────────────────────────────────────────────────────────────────
 function projectCard(p, idx) {
   const tags = p.tags.map(t => `<span class="badge">${escapeHtml(t)}</span>`).join("");
+  const num  = String(idx + 1).padStart(2, "0");
   const gh   = p.links.github
     ? `<a class="link" href="${p.links.github}" target="_blank" rel="noreferrer">GitHub →</a>` : "";
   const live = p.links.live && p.links.live !== "#"
     ? `<a class="link" href="${p.links.live}" target="_blank" rel="noreferrer">Live →</a>` : "";
   return `
     <article class="card">
+      <span class="card-num">Project ${escapeHtml(num)}</span>
       <div class="project-top"><h3>${escapeHtml(p.title)}</h3></div>
-      <p class="muted">${escapeHtml(p.desc)}</p>
+      <p class="muted" style="font-size:0.86rem;line-height:1.7;margin-top:6px;">${escapeHtml(p.desc)}</p>
       <div class="badges">${tags}</div>
       <div class="card-actions">
         <button class="link" type="button" data-open="${idx}">Case Study</button>
@@ -173,17 +214,16 @@ function projectCard(p, idx) {
 $("#projectsGrid").innerHTML = state.projects.map(projectCard).join("");
 
 // ─── Writeups ─────────────────────────────────────────────────────────────────
-function writeupCard(w) {
+function writeupCard(w, idx) {
+  const num    = String(idx + 1).padStart(2, "0");
   const action = w.href === "#"
     ? `<span class="link link-disabled">Coming soon</span>`
     : `<a class="link" href="${w.href}">Read →</a>`;
   return `
     <article class="card">
-      <div class="project-top">
-        <h3>${escapeHtml(w.title)}</h3>
-        <span class="badge">${escapeHtml(w.date)}</span>
-      </div>
-      <p class="muted">${escapeHtml(w.desc)}</p>
+      <span class="card-num">Writeup ${escapeHtml(num)} · <span style="font-family:var(--mono)">${escapeHtml(w.date)}</span></span>
+      <div class="project-top"><h3>${escapeHtml(w.title)}</h3></div>
+      <p class="muted" style="font-size:0.86rem;line-height:1.7;margin-top:6px;">${escapeHtml(w.desc)}</p>
       <div class="card-actions">${action}</div>
     </article>`;
 }
